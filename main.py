@@ -40,8 +40,7 @@ df = pd.read_csv(
         "admin_id": float,
         "data_moderator_initials": str,
         "travel_history_binary": str
-    },
-    nrows=5000
+    }
 )
 
 # df.astype({'date_onset_symptoms': 'datetime64[ns]'})
@@ -67,8 +66,24 @@ def age_to_int(age_str):
 
     if "-" in age_str:
         age_min, age_max = age_str.split("-")
+        if age_min == '':
+            return int(age_max)
+        if age_max == '':
+            return int(age_min)
         age_min, age_max = int(age_min), int(age_max)
         return int((age_min + age_max) / 2)
+
+    if "weeks" in age_str:
+        return 0
+
+    if "months" in age_str or "month" in age_str:
+        num, _ = age_str.split(" ")
+        if int(num) < 12:
+            return 0
+        return int(int(num)/12)
+
+    if age_str[-1] == "+" or age_str[-1] == "-":
+        return int(age_str[:-1])
 
     return int(float(age_str))
 
