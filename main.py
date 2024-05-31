@@ -1,8 +1,6 @@
-import math
-from datetime import datetime
-
 import numpy as np
 import pandas as pd
+from scipy.stats import chi2_contingency
 
 df = pd.read_csv(
     "./latestdata.csv",
@@ -40,7 +38,8 @@ df = pd.read_csv(
         "admin_id": float,
         "data_moderator_initials": str,
         "travel_history_binary": str
-    }
+    },
+    # nrows=1000
 )
 
 # df.astype({'date_onset_symptoms': 'datetime64[ns]'})
@@ -80,7 +79,7 @@ def age_to_int(age_str):
         num, _ = age_str.split(" ")
         if int(num) < 12:
             return 0
-        return int(int(num)/12)
+        return int(int(num) / 12)
 
     if age_str[-1] == "+" or age_str[-1] == "-":
         return int(age_str[:-1])
@@ -90,3 +89,31 @@ def age_to_int(age_str):
 
 df["age"] = df["age"].apply(age_to_int)
 df["age"] = df["age"].fillna(int(df["age"].mean()))
+
+df.info()
+
+df = df[df['outcome'].notna()]
+
+def is_correlated(var_name1, var_name2):
+    try:
+        ct = pd.crosstab(index=df[var_name1], columns=df[var_name2])
+        chi2_res = chi2_contingency(ct, )
+        p, x = chi2_res[1], "correlated" if chi2_res[1] < 0.05 else "not-correlated"
+        return p, x
+    except ValueError:
+        return 0, "no data"
+
+
+corr = [[],[]]
+for var1 in df:
+    if var1 != "ID":
+        p_val, correlation = is_correlated(var1, "outcome")
+        if correlation == "correlated":
+            corr[0].append((p_val, var1))
+        else:
+            corr[1].append((p_val, var1))
+
+corr[0].sort()
+corr[1].sort()
+
+print(corr[0],"\n", corr[1])

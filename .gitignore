@@ -2,3 +2,4 @@
 /.venv/*
 /.idea/
 /latestdata.csv
+/.ipynb_checkpoints/
