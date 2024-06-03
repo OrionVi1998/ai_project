@@ -1,6 +1,9 @@
 pandas
 numpy
+pgmpy
+scikit-learn
 scipy
 jupyterlab
 notebook
 jupyter
+prince
