@@ -7,3 +7,5 @@ jupyterlab
 notebook
 jupyter
 prince
+matplotlib
+seaborn
